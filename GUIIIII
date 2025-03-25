@@ -1,0 +1,62 @@
+from tkinter import *
+from tkinter.font import Font
+
+root=Tk()
+
+root.title('Project 29')
+root.geometry("700x500")
+root.config(bg='#9fc5e8') 
+
+
+def test():
+    ''' to dhmiourgw gia na to vazooume gia command mexri na xtisoume to upoloipo'''
+    print('test')
+
+
+menu=Menu(root)
+root.config(menu=menu)
+
+
+bold_font = Font(family="Segoe UI", size=9) #weight="bold"
+
+arxeio= Menu(menu, tearoff=0)  #bg='#cfe2f3', activebackground='#b4a7d6', activeforeground='white')
+menu.add_cascade(label='Αρχείο', menu=arxeio)
+arxeio.add_command(label='Νέο Δέντρο', command= test, font=bold_font)
+arxeio.add_command(label='Αποθήκευση', command= test)
+arxeio.add_command(label='Έξοδος', command= root.destroy)
+
+
+
+
+
+profil= Menu(menu, tearoff=0)
+menu.add_cascade(label='Προφίλ', menu=profil)
+profil.add_command(label='Προσθήκη', command=test) 
+profil.add_command(label='Επεξεργασία', command=test) 
+profil.add_command(label='Διαγραφή', command=test) 
+
+
+
+sxeseis= Menu(menu, tearoff=0)
+menu.add_cascade(label='Σχέσεις', menu=sxeseis)
+sxeseis.add_command(label='Πρσθήκη', command=test) 
+sxeseis.add_command(label='Επεξεργασία', command=test)
+sxeseis.add_command(label='Διαγραφή', command=test) 
+
+
+
+
+
+
+provoli= Menu(menu, tearoff=0)
+menu.add_cascade(label='Προβολή', menu=provoli)
+provoli.add_command(label='Εμφάνιση Δέντρου', command=test)
+
+
+
+anazitisi= Menu(menu, tearoff=0)
+menu.add_cascade(label='Αναζήτηση', menu=anazitisi)
+anazitisi.add_command(label='Αναζήτηση Απογόνων', command=test) 
+
+
+root.mainloop()
