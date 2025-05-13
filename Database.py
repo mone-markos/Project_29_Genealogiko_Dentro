@@ -1,126 +1,149 @@
+# CRUD
+# C: Create
+# R: Read (h find h whatever)
+# U: Update
+# D: Delete
 import sqlite3
+import os
+from datetime import date
+from person import Person
 
-# Σύνδεση στη βάση δεδομένων
-def connect_db():
-    return sqlite3.connect("family_tree.db")
+class Database:
+    def __init__(self):
+        # dhmioyrgia twn table, an den yparxoyn
+        self.conn = sqlite3.connect("family_tree.db")
+        print(f"Successfully connected to database")
 
+        # people table
+        self.execute_query("""
+        CREATE TABLE IF NOT EXISTS people (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
+            date_of_birth DATE
+        );
+        """)
 
-# Δημιουργία των πινάκων
-def create_tables():
-    conn = connect_db()
-    cursor = conn.cursor()
-
-    cursor.executescript("""
-    CREATE TABLE IF NOT EXISTS people (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        first_name TEXT NOT NULL,
-        last_name TEXT NOT NULL,
-        birth_date TEXT,
-        description TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS relationships (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        person1_id INTEGER NOT NULL,
-        person2_id INTEGER NOT NULL,
-        relation_type TEXT CHECK (relation_type IN ('parent', 'spouse', 'sibling', 'child')),
-        FOREIGN KEY (person1_id) REFERENCES people(id) ON DELETE CASCADE,
-        FOREIGN KEY (person2_id) REFERENCES people(id) ON DELETE CASCADE
-    );
-    """)
-    conn.commit()
-    conn.close()
-
-
-# Προσθήκη ατόμου
-def add_person(first_name, last_name, birth_date, description=""):
-    conn = connect_db()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    INSERT INTO people (first_name, last_name, birth_date, description)
-    VALUES (?, ?, ?, ?)""", (first_name, last_name, birth_date, description))
-
-    conn.commit()
-    conn.close()
+        self.execute_query("""
+        CREATE TABLE IF NOT EXISTS relationships (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            person_id_1 INTEGER NOT NULL,
+            person_id_2 INTEGER NOT NULL,
+            relationship_type TEXT NOT NULL CHECK(relationship_type IN ('parent', 'spouse')),
+            FOREIGN KEY (person_id_1) REFERENCES people (id) ON DELETE CASCADE,
+            FOREIGN KEY (person_id_2) REFERENCES people (id) ON DELETE CASCADE,
+            UNIQUE(person_id_1, person_id_2, relationship_type) -- Avoid duplicate relationships
+        );
+        """)
+    
+    def execute_query(self, query):
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        self.conn.commit()
+        cursor.close()
 
 
-# Προσθήκη σχέσης μεταξύ δύο ατόμων
-def add_relationship(person1_id, person2_id, relation_type):
-    conn = connect_db()
-    cursor = conn.cursor()
+    # C (Person)
+    # epistrefei ?
+    def insert_person(self, name, last_name, date_of_birth):
+        # otan thes na trekseis mia entolh SQL:
 
-    cursor.execute("""
-    INSERT INTO relationships (person1_id, person2_id, relation_type)
-    VALUES (?, ?, ?)""", (person1_id, person2_id, relation_type))
+        # 1. thn ftiaxneis san string
+        sql = ''' INSERT INTO people(name, last_name, date_of_birth)
+              VALUES(?,?,?) '''
+        
+        # 2. ftiaxneis ena "cursor"
+        cursor = self.conn.cursor()
 
-    conn.commit()
-    conn.close()
+        # 3. ekteleis thn entolh (vazeis mesa parametroys)
+        cursor.execute(sql, (name, last_name, date_of_birth))
 
+        # 4. oristikopoiei thn allagh (save sthn vash)
+        self.conn.commit()
 
-# Εύρεση ατόμου με βάση το ID
-def get_person(person_id):
-    conn = connect_db()
-    cursor = conn.cursor()
+        return cursor.lastrowid
 
-    cursor.execute("SELECT * FROM people WHERE id = ?", (person_id,))
-    person = cursor.fetchone()
+    # C (Relationship)
+    def insert_relationship(self, id1, id2, relationship_type):
+        sql = ''' INSERT INTO relationships(person_id_1, person_id_2, relationship_type)
+              VALUES(?,?,?) '''
+        cursor = self.conn.cursor()
 
-    conn.close()
-    return person
-
-
-# Εύρεση απογόνων ενός ατόμου
-def get_descendants(person_id):
-    conn = connect_db()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    SELECT p.id, p.first_name, p.last_name, p.birth_date 
-    FROM people p
-    JOIN relationships r ON p.id = r.person2_id
-    WHERE r.person1_id = ? AND r.relation_type = 'parent'
-    """, (person_id,))
-
-    descendants = cursor.fetchall()
-
-    conn.close()
-    return descendants
+        cursor.execute(sql, (id1, id2, relationship_type))
+        self.conn.commit()
 
 
-# Διαγραφή ατόμου και των σχέσεων του
-def delete_person(person_id):
-    conn = connect_db()
-    cursor = conn.cursor()
+    # R (Person, Relationship)
+    def get_all_people(self):
+        sql = "SELECT * FROM people;"
+        cursor = self.conn.cursor()
 
-    # Διαγραφή των σχέσεων του ατόμου
-    cursor.execute("DELETE FROM relationships WHERE person1_id = ? OR person2_id = ?", (person_id, person_id))
+        cursor.execute(sql)
+        
+        people = []
+        people_sql = cursor.fetchall()
 
-    # Διαγραφή του ατόμου
-    cursor.execute("DELETE FROM people WHERE id = ?", (person_id,))
+        for person_sql in people_sql:
+            people.append(Person(id=person_sql[0], name=person_sql[1], last_name=person_sql[2], date_of_birth=date.fromisoformat(person_sql[3])))
+        
 
-    conn.commit()
-    conn.close()
+        sql = "SELECT * FROM relationships;"
+        cursor.execute(sql)
+        relationships_sql = cursor.fetchall()
+        print('relationships:', relationships_sql)
 
+        # ftiaxnw prwta syzhgoys
+        for relationship in relationships_sql:
+            id1 = relationship[1]
+            id2 = relationship[2]
+            relationship_type = relationship[3]
 
-# Προβολή ολόκληρου του γενεαλογικού δέντρου
-def display_family_tree(person_id):
-    conn = connect_db()
-    cursor = conn.cursor()
+            # stoxos: prepei to person me id1 na exei spouse to person me id2 sthn lista
+            # kai antistrofa
+            
+            for person in people:
+                if person.id == id1:
+                    person1 = person
+                    break 
 
-    cursor.execute("""
-    SELECT p1.id, p1.first_name, p1.last_name, p1.birth_date, r.relation_type, p2.id, p2.first_name, p2.last_name 
-    FROM people p1
-    JOIN relationships r ON p1.id = r.person1_id
-    JOIN people p2 ON r.person2_id = p2.id
-    WHERE p1.id = ?
-    """, (person_id,))
+            for person in people:
+                if person.id == id2:
+                    person2 = person
+                    break 
 
-    family_members = cursor.fetchall()
+            if relationship_type == 'spouse':
+                person1.spouse = person2 
+                person2.spouse = person1
+            else:
+                person1.children.append(person2)
+                person2.parents.append(person1)
 
-    conn.close()
-    return family_members
+        return people
+    
+    # U (Person)
+    def update_person(self, id, name=None, last_name=None, date_of_birth=None):
+        sql = "UPDATE people SET name = ?, last_name = ?, date_of_birth = ? WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (name, last_name, date_of_birth, id))
+        self.conn.commit()
+    
+    # D (Person)
+    def delete_person(self, id):
+        sql = "DELETE FROM people WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, [id])
+        self.conn.commit()
 
-
-# Αρχικοποίηση της βάσης και των πινάκων
-create_tables()
+    # D (Relationship)
+    def delete_relationship(self, id1, id2):
+        sql = "DELETE FROM relationships WHERE person_id_1 = ? AND person_id_2 = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (id1,id2))
+        self.conn.commit()
+    
+    def delete_all_relationship_of_person_id(self, id):
+        sql = "DELETE FROM relationships WHERE person_id_1 = ? OR person_id_2 = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (id, id))
+        self.conn.commit()
+    
