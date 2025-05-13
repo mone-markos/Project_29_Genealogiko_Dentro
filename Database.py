@@ -4,7 +4,6 @@
 # U: Update
 # D: Delete
 import sqlite3
-import os
 from datetime import date
 from person import Person
 
