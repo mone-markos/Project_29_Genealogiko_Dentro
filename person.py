@@ -9,6 +9,3 @@ class Person:
         self.spouse = None # o syzhgos san Person
         self.children = [] # lista me antikeimena Person
         self.parents = []
-    
-    def print_details(self):
-        print(f'id: {self.id}, name: {self.name}, last name: {self.last_name}, dob: {self.date_of_birth}')
