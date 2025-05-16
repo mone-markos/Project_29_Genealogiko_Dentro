@@ -87,41 +87,39 @@ class App:
             return 'child'
         
 
-        # an p1 einai o pappoys toy p2
-        # p1 exei kapoio paidi kai afto to paidi exei gia paidi to p2
+        # Grandparent
         for p1_child in p1.children:
             if p2 in p1_child.children:
                 return 'grandparent'
 
+        # Grandchild
         for p1_parent in p1.parents:
             if p2 in p1_parent.parents:
                 return 'grandchild'
 
-        g1 = p1.parents[0]
-        g2 = p2.parents[0]
-
-        if g1 == g2:
-            return 'sibling'
-        
-        g1 = p1.parents[1]
-        g2 = p2.parents[0]
-
-        if g1 == g2:
-            return 'sibling'
-        
-        g1 = p1.parents[0]
-        g2 = p2.parents[1]
-
-        if g1 == g2:
-            return 'sibling'
-        
-        g1 = p1.parents[1]
-        g2 = p2.parents[1]
-
-        if g1 == g2:
-            return 'sibling'
-        # if p2 in p1.parents:
-        #     return 'grandparent'
+        # Sibling
+        for p1_parent in p1.parents:
+            for p2_parent in p2.parents:
+                if p1_parent == p2_parent and p1 != p2:
+                    return 'sibling'
+                
+        # Aunt (P1 is aunt of P2)
+        for p2_parent in p2.parents:
+            for p1_parent_of_aunt_uncle in p1.parents:
+                 for p2_parent_of_parent in p2_parent.parents:
+                     if p1_parent_of_aunt_uncle == p2_parent_of_parent and p1 != p2_parent:
+                         return 'aunt'
+                     
+        # Cousin (P1 and P2 are cousins)
+        for p1_parent in p1.parents:
+            for p2_parent in p2.parents:
+                for p1_grandparent in p1_parent.parents:
+                    for p2_grandparent in p2_parent.parents:
+                        if p1_grandparent == p2_grandparent and p1_parent != p2_parent:
+                             return 'cousin'
+                        
+        # Other (None of the above)
+        return 'other'
         
     
     # update person details
