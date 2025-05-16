@@ -5,10 +5,8 @@ from typing import List
 class App:
     def __init__(self):
         self.db = Database()
-        self.people : List[Person] = self.db.get_all_people() # diavazei apthn vash oloys toys anthrwpoys
+        self.people : List[Person] = self.db.get_all_people() # return all people
    
-    # PROSOXH: an to name den einai None kai to min_date_of_birth den einai None, prepei na filtrareis me vash kai ta dyo!
-    # mporeis na epistrefeis mono ena Person, to prwto poy tha vreis me afta ta krithria
     def find_person(self, id=None, name=None, last_name=None, min_date_of_birth=None, max_date_of_birth=None):
         people = self.find_people(id, name, last_name, min_date_of_birth, max_date_of_birth)
 
@@ -40,15 +38,9 @@ class App:
         if id is None:
             return
         
-        # estw id = 3
-
         # theloyme oxi mono na diagrapsoyme to person alla kai oles tis sxeseis poy exei
-
         # stoxos:
         # 1. na vgei to antikeimeno apthn lista
-        # diafora pop me remove:
-        # pop: diagrafw kati se mia sygkekrimenh thesh
-        # remove: diagrafw ena sygkekrimeno antikeimeno (to prwto)
         person = self.find_person(id)
 
         self.people.remove(person)
@@ -57,7 +49,6 @@ class App:
         self.db.delete_person(id)
 
         # 3. na diagraftoyn oles oi sxeseis stis opoies yparxei to id toy person
-        # den xreiazetai! logw toy cascade. <3 sqlite
         self.db.delete_all_relationship_of_person_id(id)
         
     # p1 (kai spouse toy p1) einai parent toy p2
@@ -74,8 +65,8 @@ class App:
         p2.spouse = p1
     
     
-    # epistrefei: spouse, parent, child, grandparent, grandchild, sibling, cousin, aunt, other
-    # h sxesei toy p1 ws pros to p2
+    # return: spouse, parent, child, grandparent, grandchild, sibling, cousin, aunt, other
+    # relationship p1 with p2
     def find_relationship(self, p1 : Person, p2 : Person):
         if p1.spouse == p2:
             return 'spouse'
@@ -86,7 +77,6 @@ class App:
         if p2 in p1.parents:
             return 'child'
         
-
         # Grandparent
         for p1_child in p1.children:
             if p2 in p1_child.children:
@@ -121,9 +111,7 @@ class App:
         # Other (None of the above)
         return 'other'
         
-    
     # update person details
-    # dinoyme to person poy theloyme na allaksoyme (to antikeimeno apo thn lista)
     def update_person(self, p1, new_name, new_last_name, new_date_of_birth):
         p1.name = new_name
         p1.last_name = new_last_name
