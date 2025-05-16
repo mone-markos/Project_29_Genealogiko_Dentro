@@ -95,9 +95,9 @@ class App:
                 
         # Aunt (P1 is aunt of P2)
         for p2_parent in p2.parents:
-            for p1_parent_of_aunt_uncle in p1.parents:
+            for p1_parent_of_aunt in p1.parents:
                  for p2_parent_of_parent in p2_parent.parents:
-                     if p1_parent_of_aunt_uncle == p2_parent_of_parent and p1 != p2_parent:
+                     if p1_parent_of_aunt == p2_parent_of_parent and p1 != p2_parent:
                          return 'aunt'
                      
         # Cousin (P1 and P2 are cousins)
