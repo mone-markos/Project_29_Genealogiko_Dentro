@@ -38,7 +38,7 @@ class App:
         if id is None:
             return
         
-        # theloyme oxi mono na diagrapsoyme to person alla kai oles tis sxeseis poy exei
+        # thelw oxi mono na diagrapsoyme to person alla kai oles tis sxeseis poy exei
         # stoxos:
         # 1. na vgei to antikeimeno apthn lista
         person = self.find_person(id)
@@ -77,17 +77,17 @@ class App:
         if p2 in p1.parents:
             return 'child'
         
-        # Grandparent
+        # Grandparent (P1 is grandparent of P2)
         for p1_child in p1.children:
             if p2 in p1_child.children:
                 return 'grandparent'
 
-        # Grandchild
+        # Grandchild (P1 is grandchild of P2)
         for p1_parent in p1.parents:
             if p2 in p1_parent.parents:
                 return 'grandchild'
 
-        # Sibling
+        # Sibling (P1 and P2 are siblings)
         for p1_parent in p1.parents:
             for p2_parent in p2.parents:
                 if p1_parent == p2_parent and p1 != p2:
