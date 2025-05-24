@@ -145,4 +145,23 @@ class Database:
         cursor = self.conn.cursor()
         cursor.execute(sql, (id, id))
         self.conn.commit()
-    
+        
+    def show_people(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM people")
+        people = cursor.fetchall()
+        cursor.close()
+
+        print("\nΆτομα στη βάση:")
+        for person in people:
+            print(person)
+
+    def show_relationships(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM relationships")
+        relationships = cursor.fetchall()
+        cursor.close()
+
+        print("\nΣχέσεις στη βάση:")
+        for relation in relationships:
+            print(relation)
