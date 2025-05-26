@@ -1,19 +1,12 @@
-# CRUD
-# C: Create
-# R: Read (h find h whatever)
-# U: Update
-# D: Delete
 import sqlite3
 from datetime import date
 from person import Person
 
 class Database:
     def __init__(self):
-        # dhmioyrgia twn table, an den yparxoyn
         self.conn = sqlite3.connect("family_tree.db")
-        print(f"Successfully connected to database")
+        print("Successfully connected to database")
 
-        # people table
         self.execute_query("""
         CREATE TABLE IF NOT EXISTS people (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,118 +24,117 @@ class Database:
             relationship_type TEXT NOT NULL CHECK(relationship_type IN ('parent', 'spouse')),
             FOREIGN KEY (person_id_1) REFERENCES people (id) ON DELETE CASCADE,
             FOREIGN KEY (person_id_2) REFERENCES people (id) ON DELETE CASCADE,
-            UNIQUE(person_id_1, person_id_2, relationship_type) -- Avoid duplicate relationships
+            UNIQUE(person_id_1, person_id_2, relationship_type)
         );
         """)
-    
+
     def execute_query(self, query):
         cursor = self.conn.cursor()
         cursor.execute(query)
         self.conn.commit()
         cursor.close()
 
+    # ------------------ C ------------------
 
-    # C (Person)
-    # epistrefei ?
     def insert_person(self, name, last_name, date_of_birth):
-        # otan thes na trekseis mia entolh SQL:
-
-        # 1. thn ftiaxneis san string
-        sql = ''' INSERT INTO people(name, last_name, date_of_birth)
-              VALUES(?,?,?) '''
-        
-        # 2. ftiaxneis ena "cursor"
+        sql = '''INSERT INTO people(name, last_name, date_of_birth) VALUES(?,?,?)'''
         cursor = self.conn.cursor()
-
-        # 3. ekteleis thn entolh (vazeis mesa parametroys)
         cursor.execute(sql, (name, last_name, date_of_birth))
-
-        # 4. oristikopoiei thn allagh (save sthn vash)
         self.conn.commit()
-
         return cursor.lastrowid
 
-    # C (Relationship)
     def insert_relationship(self, id1, id2, relationship_type):
-        sql = ''' INSERT INTO relationships(person_id_1, person_id_2, relationship_type)
-              VALUES(?,?,?) '''
+        sql = '''INSERT INTO relationships(person_id_1, person_id_2, relationship_type) VALUES(?,?,?)'''
         cursor = self.conn.cursor()
-
         cursor.execute(sql, (id1, id2, relationship_type))
         self.conn.commit()
 
+    # ------------------ R ------------------
 
-    # R (Person, Relationship)
-    def get_all_people(self):
-        sql = "SELECT * FROM people;"
+    def get_person(self, person_id):
+        sql = "SELECT * FROM people WHERE id = ?"
         cursor = self.conn.cursor()
+        cursor.execute(sql, (person_id,))
+        row = cursor.fetchone()
+        cursor.close()
 
+        if row:
+            return Person(id=row[0], name=row[1], last_name=row[2], date_of_birth=date.fromisoformat(row[3]))
+        return None
+
+    def get_all_people(self):
+        sql = "SELECT * FROM people"
+        cursor = self.conn.cursor()
         cursor.execute(sql)
-        
         people = []
-        people_sql = cursor.fetchall()
+        for row in cursor.fetchall():
+            people.append(Person(id=row[0], name=row[1], last_name=row[2], date_of_birth=date.fromisoformat(row[3])))
 
-        for person_sql in people_sql:
-            people.append(Person(id=person_sql[0], name=person_sql[1], last_name=person_sql[2], date_of_birth=date.fromisoformat(person_sql[3])))
-        
-
-        sql = "SELECT * FROM relationships;"
-        cursor.execute(sql)
-        relationships_sql = cursor.fetchall()
-        print('relationships:', relationships_sql)
-
-        # ftiaxnw prwta syzhgoys
-        for relationship in relationships_sql:
-            id1 = relationship[1]
-            id2 = relationship[2]
-            relationship_type = relationship[3]
-
-            # stoxos: prepei to person me id1 na exei spouse to person me id2 sthn lista
-            # kai antistrofa
-            
-            for person in people:
-                if person.id == id1:
-                    person1 = person
-                    break 
-
-            for person in people:
-                if person.id == id2:
-                    person2 = person
-                    break 
-
-            if relationship_type == 'spouse':
-                person1.spouse = person2 
-                person2.spouse = person1
-            else:
-                person1.children.append(person2)
-                person2.parents.append(person1)
-
+        # Add relationships
+        cursor.execute("SELECT * FROM relationships")
+        for rel in cursor.fetchall():
+            id1, id2, rel_type = rel[1], rel[2], rel[3]
+            p1 = next((p for p in people if p.id == id1), None)
+            p2 = next((p for p in people if p.id == id2), None)
+            if p1 and p2:
+                if rel_type == 'spouse':
+                    p1.spouse = p2
+                    p2.spouse = p1
+                else:
+                    p1.children.append(p2)
+                    p2.parents.append(p1)
+        cursor.close()
         return people
-    
-    # U (Person)
-    def update_person(self, id, name=None, last_name=None, date_of_birth=None):
+
+    # ------------------ U ------------------
+
+    def update_person(self, person_id, name=None, last_name=None, date_of_birth=None):
         sql = "UPDATE people SET name = ?, last_name = ?, date_of_birth = ? WHERE id = ?"
         cursor = self.conn.cursor()
-        cursor.execute(sql, (name, last_name, date_of_birth, id))
-        self.conn.commit()
-    
-    # D (Person)
-    def delete_person(self, id):
-        sql = "DELETE FROM people WHERE id = ?"
-        cursor = self.conn.cursor()
-        cursor.execute(sql, [id])
+        cursor.execute(sql, (name, last_name, date_of_birth, person_id))
         self.conn.commit()
 
-    # D (Relationship)
+    def update_relationship(self, id1, id2, new_type):
+        sql = "UPDATE relationships SET relationship_type = ? WHERE person_id_1 = ? AND person_id_2 = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (new_type, id1, id2))
+        self.conn.commit()
+
+    # ------------------ D ------------------
+
+    def delete_person(self, person_id):
+        sql = "DELETE FROM people WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (person_id,))
+        self.conn.commit()
+
+        
     def delete_relationship(self, id1, id2):
         sql = "DELETE FROM relationships WHERE person_id_1 = ? AND person_id_2 = ?"
         cursor = self.conn.cursor()
-        cursor.execute(sql, (id1,id2))
+        cursor.execute(sql, (id1, id2))
         self.conn.commit()
-    
-    def delete_all_relationship_of_person_id(self, id):
+
+    def delete_all_relationships_of_person(self, person_id):
         sql = "DELETE FROM relationships WHERE person_id_1 = ? OR person_id_2 = ?"
         cursor = self.conn.cursor()
-        cursor.execute(sql, (id, id))
+        cursor.execute(sql, (person_id, person_id))
         self.conn.commit()
-    
+
+    # ------------------ Debug Helpers ------------------
+
+    def show_people(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM people")
+        print("\nΆτομα στη βάση:")
+        for row in cursor.fetchall():
+            print(row)
+        cursor.close()
+
+    def show_relationships(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM relationships")
+        print("\nΣχέσεις στη βάση:")
+        for row in cursor.fetchall():
+            print(row)
+        cursor.close()
