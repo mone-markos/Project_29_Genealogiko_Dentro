@@ -30,14 +30,13 @@ def create_tables():
     conn.commit()
     conn.close()
 
-# Προσθέτει νέο άτομο στη βάση και επιστρέφει το ID του
+# Προσθέτει νέο άτομο και επιστρέφει το ID του
 def add_person(first_name, last_name, birth_date, description=""):
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO people (first_name, last_name, birth_date, description)
     VALUES (?, ?, ?, ?)""", (first_name, last_name, birth_date, description))
-    
     new_id = cursor.lastrowid
     conn.commit()
     conn.close()
@@ -64,7 +63,7 @@ def get_person(person_id):
     conn.close()
     return person
 
-# Επιστρέφει όλα τα άτομα από τη βάση
+# Επιστρέφει όλα τα άτομα της βάσης
 def get_all_people():
     conn = connect_db()
     cursor = conn.cursor()
@@ -73,11 +72,11 @@ def get_all_people():
     conn.close()
     return people
 
-# Διαγράφει άτομο και όλες τις σχετικές σχέσεις του
+# Διαγράφει άτομο - οι σχέσεις του διαγράφονται αυτόματα (ON DELETE CASCADE)
 def delete_person(person_id):
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM relationships WHERE person1_id = ? OR person2_id = ?", (person_id, person_id))
+    cursor.execute("PRAGMA foreign_keys = ON")  # Ενεργοποίηση foreign keys
     cursor.execute("DELETE FROM people WHERE id = ?", (person_id,))
     conn.commit()
     conn.close()
@@ -92,7 +91,7 @@ def add_relationship(person1_id, person2_id, relation_type):
     conn.commit()
     conn.close()
 
-# Επιστρέφει τα στοιχεία μιας σχέσης με βάση το ID της
+# Επιστρέφει τα στοιχεία μιας σχέσης με βάση το ID
 def get_relationship(relationship_id):
     conn = connect_db()
     cursor = conn.cursor()
@@ -101,7 +100,7 @@ def get_relationship(relationship_id):
     conn.close()
     return relationship
 
-# Ενημερώνει τα στοιχεία μιας υπάρχουσας σχέσης
+# Ενημερώνει πλήρως μια σχέση
 def update_relationship(relationship_id, person1_id, person2_id, relation_type):
     conn = connect_db()
     cursor = conn.cursor()
@@ -113,7 +112,19 @@ def update_relationship(relationship_id, person1_id, person2_id, relation_type):
     conn.commit()
     conn.close()
 
-# Διαγράφει μια σχέση από τη βάση
+# Ενημερώνει μόνο τον τύπο σχέσης (χρησιμοποιείται στο GUI)
+def update_relationship_by_id(relationship_id, new_relation_type):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+    UPDATE relationships
+    SET relation_type = ?
+    WHERE id = ?
+    """, (new_relation_type, relationship_id))
+    conn.commit()
+    conn.close()
+
+# Διαγράφει σχέση βάσει ID
 def delete_relationship(relationship_id):
     conn = connect_db()
     cursor = conn.cursor()
@@ -121,7 +132,11 @@ def delete_relationship(relationship_id):
     conn.commit()
     conn.close()
 
-# Επιστρέφει όλες τις σχέσεις από τη βάση
+# Εναλλακτική συνάρτηση για διαγραφή σχέσης (για χρήση στο GUI)
+def delete_relationship_by_id(relationship_id):
+    delete_relationship(relationship_id)
+
+# Επιστρέφει όλες τις σχέσεις της βάσης
 def get_all_relationships():
     conn = connect_db()
     cursor = conn.cursor()
@@ -130,5 +145,5 @@ def get_all_relationships():
     conn.close()
     return relationships
 
-# Δημιουργεί τους πίνακες όταν φορτωθεί το αρχείο
+# Εκτελείται αυτόματα όταν φορτώνεται το αρχείο
 create_tables()
