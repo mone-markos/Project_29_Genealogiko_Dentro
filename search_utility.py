@@ -93,7 +93,7 @@ def _get_all_people():
 
     return people
 
-def _find_relationship(self, p1 : Person, p2 : Person):
+def _find_relationship(p1 : Person, p2 : Person):
     if p1.spouse == p2:
         return 'spouse'
     
