@@ -165,6 +165,7 @@ def find_descendants(person_id):
     
     descendants = []
     
+    # Για αποφυγή διπλότυπων απογόνων
     visited_people = set()
 
     def _get_children(person):
@@ -172,6 +173,7 @@ def find_descendants(person_id):
             return
         visited_people.add(person.id)
 
+        # Αναδρομηκή συνάρτηση που ψάχνει απογόνους και τους βάζει σε μια λίστα 
         for child in person.children:
             descendants.append(child.as_dictionary())
             _get_children(child)
