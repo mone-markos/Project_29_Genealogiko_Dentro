@@ -150,3 +150,31 @@ def _find_relationship(p1 : Person, p2 : Person):
                     
     # # Other (None of the above)
     return None
+
+def find_descendants(person_id):
+    all_people = _get_all_people()
+
+    first_person = None
+    for p in all_people:
+        if p.id == person_id:
+            first_person = p
+            break
+
+    if not first_person:
+        return []
+    
+    descendants = []
+    
+    visited_people = set()
+
+    def _get_children(person):
+        if person.id in visited_people:
+            return
+        visited_people.add(person.id)
+
+        for child in person.children:
+            descendants.append(child.as_dictionary())
+            _get_children(child)
+
+    _get_children(first_person)
+    return descendants
