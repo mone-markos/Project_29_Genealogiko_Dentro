@@ -6,9 +6,9 @@ class Person:
         self.date_of_birth = date_of_birth
         self.description = description
         
-        # kena relationships sthn arxh
-        self.spouse = None # o syzhgos san Person
-        self.children = [] # lista me antikeimena Person
+        # Κενά relationships στην αρχή
+        self.spouse = None
+        self.children = [] 
         self.parents = []
     
     def as_dictionary(self):

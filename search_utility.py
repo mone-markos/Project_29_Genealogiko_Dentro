@@ -2,7 +2,7 @@ import Database as db
 from person import Person
 from datetime import date
 
-# epistrefei None an den yparxei
+# Επιστρέφει None αν δεν βρεί κάτι
 def find_person(id=None, first_name=None, last_name=None, min_date_of_birth=None, max_date_of_birth=None):
     people = find_people(id, first_name, last_name, min_date_of_birth, max_date_of_birth)
 
@@ -11,7 +11,7 @@ def find_person(id=None, first_name=None, last_name=None, min_date_of_birth=None
     
     return None
 
-# epistrefei: [{'id':1, 'first_name':..., ...}, ..]
+# Επιστρέφει: [{'id':1, 'first_name':..., ...}, ..]
 def find_people(id=None, first_name=None, last_name=None, min_date_of_birth=None, max_date_of_birth=None):
     people = []
     for person in _get_all_people():
@@ -48,7 +48,7 @@ def find_relationship(id1, id2):
     return _find_relationship(person1, person2)
 
 
-# synarthsh poy xrhsimopoiw gia na ftiaw mia lista me ola ta person ws antikeimena Person, mazi me tis sxeseis toys
+# Συνάρτηση που χρησιμοποιώ για να φτιάξω μια λίστα με όλα τα person ως αντικείμενα Person, μαζί με τις σχέσεις τους
 def _get_all_people():
     sql = "SELECT * FROM people;"
     cursor = db.connect_db().cursor()
@@ -67,15 +67,13 @@ def _get_all_people():
     relationships_sql = cursor.fetchall()
     print('relationships:', relationships_sql)
 
-    # ftiaxnw prwta syzhgoys
+    # Φτιάχνω πρώτα συζήγους
     for relationship in relationships_sql:
         id1 = relationship[1]
         id2 = relationship[2]
         relationship_type = relationship[3]
 
-        # stoxos: prepei to person me id1 na exei spouse to person me id2 sthn lista
-        # kai antistrofa
-        
+        # Πρέπει στην λίστα το person με id1 να έχει spouse το person με id2 και τα παιδία του id1 να έχουν γόνεις το id1 και το id2 και αντίστροφα
         for person in people:
             if person.id == id1:
                 person1 = person
@@ -123,13 +121,13 @@ def _find_relationship(self, p1 : Person, p2 : Person):
             
     # # Aunt (P1 is aunt of P2)
     # # pote o p1 einai aunt toy p2?
-    # # otan kapoios adelfos toy p1 einai goneas toy p2
+    # # otan kapoios adelfos toy p1 einai parent toy p2
 
     # # test for aunt
-    # goneas_p1 = p1.parents[0]
-    # if goneas_p1 is not None:
-    #     paidia_gonea_p1 = goneas_p1.children
-    #     for child in paidia_gonea_p1:
+    # parent_p1 = p1.parents[0]
+    # if parent_p1 is not None:
+    #     children_of_parent_p1 = parent_p1.children
+    #     for child in children_of_parent_p1:
     #         if child == p1:
     #             continue
 
