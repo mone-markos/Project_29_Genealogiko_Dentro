@@ -102,53 +102,7 @@ def _find_relationship(p1 : Person, p2 : Person):
     
     if p2 in p1.parents:
         return 'child'
-    
-    # # Grandparent (P1 is grandparent of P2)
-    # for p1_child in p1.children:
-    #     if p2 in p1_child.children:
-    #         return 'grandparent'
 
-    # # Grandchild (P1 is grandchild of P2)
-    # for p1_parent in p1.parents:
-    #     if p2 in p1_parent.parents:
-    #         return 'grandchild'
-
-    # # Sibling (P1 and P2 are siblings)
-    # for p1_parent in p1.parents:
-    #     for p2_parent in p2.parents:
-    #         if p1_parent == p2_parent and p1 != p2:
-    #             return 'sibling'
-            
-    # # Aunt (P1 is aunt of P2)
-    # # pote o p1 einai aunt toy p2?
-    # # otan kapoios adelfos toy p1 einai parent toy p2
-
-    # # test for aunt
-    # parent_p1 = p1.parents[0]
-    # if parent_p1 is not None:
-    #     children_of_parent_p1 = parent_p1.children
-    #     for child in children_of_parent_p1:
-    #         if child == p1:
-    #             continue
-
-    #         if p2 in child.children:
-    #             return 'aunt'
-
-    # for p2_parent in p2.parents:
-    #     for p1_parent_of_aunt in p1.parents:
-    #             for p2_parent_of_parent in p2_parent.parents:
-    #                 if p1_parent_of_aunt == p2_parent_of_parent and p1 != p2_parent:
-    #                     return 'aunt'
-                    
-    # # Cousin (P1 and P2 are cousins)
-    # for p1_parent in p1.parents:
-    #     for p2_parent in p2.parents:
-    #         for p1_grandparent in p1_parent.parents:
-    #             for p2_grandparent in p2_parent.parents:
-    #                 if p1_grandparent == p2_grandparent and p1_parent != p2_parent:
-    #                         return 'cousin'
-                    
-    # # Other (None of the above)
     return None
 
 def find_descendants(person_id):
