@@ -8,14 +8,14 @@ def connect_db():
 def create_tables():
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")  # Ενεργοποίηση περιορισμών ξένων κλειδιών
 
     cursor.executescript("""
     CREATE TABLE IF NOT EXISTS people (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         first_name TEXT NOT NULL,
         last_name TEXT NOT NULL,
-        birth_date TEXT,
-        description TEXT
+        birth_date TEXT
     );
 
     CREATE TABLE IF NOT EXISTS relationships (
@@ -31,33 +31,36 @@ def create_tables():
     conn.close()
 
 # Προσθέτει νέο άτομο και επιστρέφει το ID του
-def add_person(first_name, last_name, birth_date, description=""):
+def add_person(first_name, last_name, birth_date):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("""
-    INSERT INTO people (first_name, last_name, birth_date, description)
-    VALUES (?, ?, ?, ?)""", (first_name, last_name, birth_date, description))
+    INSERT INTO people (first_name, last_name, birth_date)
+    VALUES (?, ?, ?)""", (first_name, last_name, birth_date))
     new_id = cursor.lastrowid
     conn.commit()
     conn.close()
     return new_id
 
-# Ενημερώνει τα στοιχεία ενός υπάρχοντος ατόμου
-def update_person(person_id, first_name, last_name, birth_date, description=""):
+# Ενημερώνει τα στοιχεία ενός ατόμου
+def update_person(person_id, first_name, last_name, birth_date):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("""
     UPDATE people
-    SET first_name = ?, last_name = ?, birth_date = ?, description = ?
+    SET first_name = ?, last_name = ?, birth_date = ?
     WHERE id = ?
-    """, (first_name, last_name, birth_date, description, person_id))
+    """, (first_name, last_name, birth_date, person_id))
     conn.commit()
     conn.close()
 
-# Επιστρέφει τα στοιχεία ενός ατόμου με βάση το ID
+# Επιστρέφει ένα άτομο με βάση το ID
 def get_person(person_id):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("SELECT * FROM people WHERE id = ?", (person_id,))
     person = cursor.fetchone()
     conn.close()
@@ -67,34 +70,39 @@ def get_person(person_id):
 def get_all_people():
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("SELECT * FROM people")
     people = cursor.fetchall()
     conn.close()
     return people
 
-# Διαγράφει άτομο - οι σχέσεις του διαγράφονται αυτόματα (ON DELETE CASCADE)
+# Διαγράφει άτομο (οι σχέσεις του διαγράφονται αυτόματα λόγω ON DELETE CASCADE)
 def delete_person(person_id):
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("PRAGMA foreign_keys = ON")  # Ενεργοποίηση foreign keys
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("DELETE FROM people WHERE id = ?", (person_id,))
     conn.commit()
     conn.close()
 
-# Προσθέτει νέα σχέση μεταξύ δύο ατόμων
+# Προσθέτει νέα σχέση και επιστρέφει το ID της
 def add_relationship(person1_id, person2_id, relation_type):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("""
     INSERT INTO relationships (person1_id, person2_id, relation_type)
     VALUES (?, ?, ?)""", (person1_id, person2_id, relation_type))
+    new_id = cursor.lastrowid
     conn.commit()
     conn.close()
+    return new_id
 
 # Επιστρέφει τα στοιχεία μιας σχέσης με βάση το ID
 def get_relationship(relationship_id):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("SELECT * FROM relationships WHERE id = ?", (relationship_id,))
     relationship = cursor.fetchone()
     conn.close()
@@ -104,6 +112,7 @@ def get_relationship(relationship_id):
 def update_relationship(relationship_id, person1_id, person2_id, relation_type):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("""
     UPDATE relationships
     SET person1_id = ?, person2_id = ?, relation_type = ?
@@ -112,10 +121,11 @@ def update_relationship(relationship_id, person1_id, person2_id, relation_type):
     conn.commit()
     conn.close()
 
-# Ενημερώνει μόνο τον τύπο σχέσης (χρησιμοποιείται στο GUI)
+# Ενημερώνει μόνο τον τύπο σχέσης
 def update_relationship_by_id(relationship_id, new_relation_type):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("""
     UPDATE relationships
     SET relation_type = ?
@@ -128,18 +138,16 @@ def update_relationship_by_id(relationship_id, new_relation_type):
 def delete_relationship(relationship_id):
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("DELETE FROM relationships WHERE id = ?", (relationship_id,))
     conn.commit()
     conn.close()
 
-# Εναλλακτική συνάρτηση για διαγραφή σχέσης (για χρήση στο GUI)
-def delete_relationship_by_id(relationship_id):
-    delete_relationship(relationship_id)
-
-# Επιστρέφει όλες τις σχέσεις της βάσης
+# Επιστρέφει όλες τις σχέσεις από τη βάση
 def get_all_relationships():
     conn = connect_db()
     cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     cursor.execute("SELECT * FROM relationships")
     relationships = cursor.fetchall()
     conn.close()
