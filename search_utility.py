@@ -2,8 +2,8 @@ import Database as db
 from person import Person
 
 # Επιστρέφει None αν δεν βρεί κάτι
-def find_person(id=None, first_name=None, last_name=None):
-    people = find_people(id, first_name, last_name)
+def find_person(id=None, first_name=None, last_name=None, date_of_birth = None):
+    people = find_people(id, first_name, last_name, date_of_birth)
 
     if people:
         return people[0]
@@ -11,13 +11,13 @@ def find_person(id=None, first_name=None, last_name=None):
     return None
 
 # Επιστρέφει: [{'id':1, 'first_name':..., ...}, ..]
-def find_people(id=None, first_name=None, last_name=None):
+def find_people(id=None, first_name=None, last_name=None, date_of_birth = None):
     people = []
     for person in _get_all_people():
         if        (person.first_name == first_name or first_name is None) \
                 and (person.last_name == last_name or last_name is None) \
-                and (person.id == id or id is None):
-
+                and (person.id == id or id is None) \
+                and (person.date_of_birth == date_of_birth or date_of_birth is None):
             people.append(person)
     
     people_dicts = [person.as_dictionary() for person in people]
