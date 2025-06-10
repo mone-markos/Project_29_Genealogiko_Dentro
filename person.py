@@ -11,4 +11,4 @@ class Person:
         self.parents = []
     
     def as_dictionary(self):
-        return {'first_name':self.first_name, 'last_name':self.last_name, 'id': self.id, 'birth_date': self.date_of_birth}
+        return {'id': self.id, 'first_name':self.first_name, 'last_name':self.last_name, 'birth_date': self.date_of_birth}
