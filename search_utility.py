@@ -102,6 +102,12 @@ def _find_relationship(p1 : Person, p2 : Person):
     
     if p2 in p1.parents:
         return 'child'
+    
+        # Sibling (P1 and P2 are siblings)
+    for p1_parent in p1.parents:
+        for p2_parent in p2.parents:
+            if p1_parent == p2_parent and p1 != p2:
+                return 'sibling'
 
     return None
 
