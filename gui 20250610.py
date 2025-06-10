@@ -1,6 +1,11 @@
 from tkinter import *
 from tkinter.font import Font
+
 from Database import *
+
+from search_utility import *
+
+from graph import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import tkinter.messagebox
@@ -117,9 +122,6 @@ def open_add_relationship_window():
 
     # ------------------ Επεξεργασία ------------------
 
-
-from tkinter import *
-from Database import get_person, update_person  # Εισάγουμε τις σωστές συναρτήσεις
 
 def open_edit_person_window():
     """Δημιουργεί παράθυρο για επεξεργασία ατόμου."""
@@ -335,6 +337,74 @@ def open_delete_relationship_window():
     status_label = Label(delete_window, text="", fg="green")
     status_label.pack()
 
+    # ------------------ Αναζήτηση Απογόνων ------------------
+
+
+def open_search_descendants_window():
+    """Δημιουργεί παράθυρο για αναζήτηση απογόνων ενός ατόμου."""
+    search_window = Toplevel(root)
+    search_window.title("Αναζήτηση Απογόνων")
+    search_window.geometry("400x300")
+
+    Label(search_window, text="Εισάγετε ID Ατόμου:").pack()
+    id_entry = Entry(search_window)
+    id_entry.pack()
+
+    result_listbox = Listbox(search_window, width=50, height=10)
+    result_listbox.pack()
+
+    def search_descendants():
+        """Εκτελεί την αναζήτηση και εμφανίζει τους απογόνους στη λίστα."""
+        person_id = id_entry.get()
+        if not person_id.isdigit():
+            result_listbox.insert(END, "Μη έγκυρο ID!")
+            return
+
+        descendants = find_descendants(int(person_id))  # Χρησιμοποιούμε τη συνάρτηση από το script
+
+        result_listbox.delete(0, END)  # Καθαρίζουμε τη λίστα πριν προσθέσουμε νέα δεδομένα
+        if descendants:
+            for descendant in descendants:
+                result_listbox.insert(END, f"{descendant['id']}: {descendant['first_name']} {descendant['last_name']}")
+        else:
+            result_listbox.insert(END, "Δεν βρέθηκαν απόγονοι.")
+
+    Button(search_window, text="Αναζήτηση", command=search_descendants).pack()
+
+    # ------------------ Menu ------------------
+def open_find_descendants_window():
+    """Παράθυρο για αναζήτηση απογόνων με βάση το ID ατόμου."""
+    desc_window = Toplevel(root)
+    desc_window.title("Αναζήτηση Απογόνων")
+    desc_window.geometry("400x400")
+
+    Label(desc_window, text="ID Ατόμου:").pack()
+    id_entry = Entry(desc_window)
+    id_entry.pack()
+
+    result_box = Text(desc_window, height=15, width=50)
+    result_box.pack()
+
+    def run_search():
+        person_id = id_entry.get()
+        result_box.delete("1.0", END)
+
+        if not person_id.isdigit():
+            result_box.insert(END, "Μη έγκυρο ID.")
+            return
+
+        descendants = find_descendants(int(person_id))
+
+        if not descendants:
+            result_box.insert(END, "Δεν βρέθηκαν απόγονοι.")
+        else:
+            for d in descendants:
+                info = f"ID: {d['id']}, Όνομα: {d['first_name']} {d['last_name']}, Γέννηση: {d['birth_date']}\n"
+                result_box.insert(END, info)
+
+    Button(desc_window, text="Αναζήτηση", command=run_search).pack()
+
+
 
     # ------------------ Menu ------------------
 
@@ -387,13 +457,13 @@ sxeseis.add_command(label='Διαγραφή', command=open_delete_relationship_w
 
 provoli= Menu(menu, tearoff=0)
 menu.add_cascade(label='Προβολή', menu=provoli)
-provoli.add_command(label='Εμφάνιση Δέντρου', command=test)
+provoli.add_command(label='Εμφάνιση Δέντρου', command=display_family_tree)
 
 
 
 anazitisi= Menu(menu, tearoff=0)
 menu.add_cascade(label='Αναζήτηση', menu=anazitisi)
-anazitisi.add_command(label='Αναζήτηση Απογόνων', command=test) 
+anazitisi.add_command(label='Αναζήτηση Απογόνων', command=open_search_descendants_window) 
 
 
 voitheia= Menu(menu, tearoff=0)
