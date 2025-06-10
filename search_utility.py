@@ -1,6 +1,5 @@
 import Database as db
 from person import Person
-from datetime import date
 
 # Επιστρέφει None αν δεν βρεί κάτι
 def find_person(id=None, first_name=None, last_name=None, min_date_of_birth=None, max_date_of_birth=None):
@@ -59,7 +58,7 @@ def _get_all_people():
     people_sql = cursor.fetchall()
 
     for person_sql in people_sql:
-        people.append(Person(id=person_sql[0], first_name=person_sql[1], last_name=person_sql[2], date_of_birth=date.fromisoformat(person_sql[3]), description=person_sql[4]))
+        people.append(Person(id=person_sql[0], first_name=person_sql[1], last_name=person_sql[2], date_of_birth=person_sql[3], description=person_sql[4]))
     
 
     sql = "SELECT * FROM relationships;"
