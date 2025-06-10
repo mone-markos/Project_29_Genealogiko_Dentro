@@ -58,11 +58,9 @@ def _get_all_people():
     for person_sql in people_sql:
         people.append(Person(id=person_sql[0], first_name=person_sql[1], last_name=person_sql[2], date_of_birth=person_sql[3]))
     
-    print(people_sql)
     sql = "SELECT * FROM relationships;"
     cursor.execute(sql)
     relationships_sql = cursor.fetchall()
-    print('relationships:', relationships_sql)
 
     # Φτιάχνω πρώτα συζήγους
     for relationship in relationships_sql:
