@@ -24,4 +24,3 @@
 1. Γλώσσα προγραμματισμού: Python
 2. Γραφικές βιβλιοθήκες: tkinter, matplotlib, networkx
 3. Αποθήκευση δεδομένων: SQLite
-4. Αναζήτηση:Python, SQLite
