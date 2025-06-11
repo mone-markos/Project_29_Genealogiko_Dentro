@@ -51,14 +51,13 @@ def load_persons_and_relationships():
     conn.close()
 
 # Ορισμός pop up με παράμετρο
-def show_popup(node_id):
-    
+def show_popup(node_id):   
     person = get_person(node_id) #Συλλέγει τις πληροφορίες από τη database
     if person: 
         person[1], person[2], person[3]
         message = f"Όνομα: {person[1]} {person[2]}\nΗμερομηνία Γέννησης: {person[3]}"
         tkinter.messagebox.showinfo("Πληροφορίες Ατόμου", message)
-
+        
 # Εμφάνιση δέντρου
 def display_family_tree():
     
@@ -75,16 +74,14 @@ def display_family_tree():
     nx.draw(G, pos, with_labels=True, labels=node_labels, node_color='lightgrey', edge_color=edge_colors,
             node_size=7000, font_size=10, font_weight='light', width=2, ax=ax)
 
-
     # Συνάρτηση για το κλικ στον κόμβο
-    def on_click(event, ax, G):
-        
+    def on_click(event, ax, G):      
         for node in G.nodes():
             x, y = pos[node]  # Θέση του κόμβου στον άξoνα
             distance = ((event.xdata - x) ** 2 + (event.ydata - y) ** 2) ** 0.5  # Απόσταση του κλικ
             if distance < 0.1:
                 show_popup(node)  # Εμφανίζουμε το pop-up
-
+                
     #Αποτύπωση του κλικ στον άξονα
     fig.canvas.mpl_connect('button_press_event', lambda event: on_click(event, ax, G))
 
