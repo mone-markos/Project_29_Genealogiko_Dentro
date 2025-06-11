@@ -9,6 +9,7 @@ from graph import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import tkinter.messagebox
+from graph import display_family_tree
 
 '''
 periexomena:
@@ -114,9 +115,19 @@ def open_add_relationship_window():
         person2_id = person2_entry.get()
         relation_type = selected_relationship.get()  
 
+#προσπαθούμε να παραβλέψουμε αυτό το πρόβλημα στην db με την αστοχία δύο τύπων σχέσεων για την σχέση parent-child: 
+
+        if relation_type == "parent(1)-child(2)":
+            relation_type = "parent"
+
+
+            
         if person1_id.isdigit() and person2_id.isdigit():
-            add_relationship(person1_id, person2_id, relation_type) 
-            status_label.config(text=f"Σχέση {relation_type} αποθηκεύτηκε!", fg="green")
+            add_relationship(person1_id, person2_id, relation_type)
+
+            display_type = "parent(1)-child(2)" if relation_type == "parent" else relation_type #τράμπα για το print
+            
+            status_label.config(text=f"Σχέση {display_type} αποθηκεύτηκε!", fg="green")
         else:
             status_label.config(text="Μη έγκυρα δεδομένα!", fg="red")
 
