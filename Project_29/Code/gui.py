@@ -9,7 +9,6 @@ from graph import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import tkinter.messagebox
-from graph import display_family_tree
 
 '''
 periexomena:
@@ -543,6 +542,7 @@ anazitisi.add_command(label='Αναζήτηση Απογόνων', command=open_
 
 voitheia= Menu(menu, tearoff=0)
 menu.add_cascade(label='Βοήθεια', menu=voitheia)
+voitheia.add_command(label='Προφίλ', command=show_profile_help) 
 voitheia.add_command(label='Σχέσεις', command=show_relationship_help) 
 voitheia.add_command(label='Γράφος', command=show_graph_help)
 voitheia.add_command(label='Αναζήτηση', command=show_search_help)
