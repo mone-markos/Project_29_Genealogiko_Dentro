@@ -28,9 +28,11 @@ def open_delete_relationship_window()
 ANAZHTHSH APOGONWN
 def open_search_descendants_window()
 
-
-VOITHEIA 
-
+VOITHEIA
+def show_profile_help()
+def show_relationship_help()
+def show_graph_help()
+def show_search_help()
 
 MENU
 
@@ -536,7 +538,7 @@ voitheia.add_command(label='Αναζήτηση', command=show_search_help)
 
 
 
-eksodos= Menu(menu, tearoff=0)  #bg='#cfe2f3', activebackground='#b4a7d6', activeforeground='white')
+eksodos= Menu(menu, tearoff=0)  #bg='#cfe2f3', activebackground='#b4a7d6', activeforeground='white'
 menu.add_cascade(label='Έξοδος', menu=eksodos) 
 eksodos.add_command(label='Έξοδος', command= root.destroy)
 
