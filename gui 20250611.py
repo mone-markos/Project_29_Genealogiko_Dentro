@@ -14,16 +14,23 @@ import tkinter.messagebox
 periexomena:
 
 DHMIOURGIA
-def open_add_person_window(): OK
-def open_add_relationship_window(): dhmiourgei thn sxesh, den epistrefei id
+def open_add_person_window()
+def open_add_relationship_window()
 
 EPEKSERGASIA
-def open_edit_relationship_window(): OK
-def open_edit_person_window(): ok
+def open_edit_relationship_window()
+def open_edit_person_window()
 
 DIAGRAFH
-def open_delete_person_window(): ok!
-def open_delete_relationship_window(): OK
+def open_delete_person_window()
+def open_delete_relationship_window()
+
+ANAZHTHSH APOGONWN
+def open_search_descendants_window()
+
+
+VOITHEIA 
+
 
 MENU
 
@@ -396,6 +403,74 @@ def open_search_descendants_window():
     Button(search_window, text="Αναζήτηση", command=search_descendants).pack()
 
     # ------------------ Βοήθεια ------------------
+def show_profile_help():
+    """Pop-up με οδηγίες για την προσθήκη προφίλ."""
+    help_window = Toplevel(root)
+    help_window.title("Βοήθεια - Προσθήκη Προφίλ")
+    help_window.geometry("400x250")
+
+    instructions = """Πώς να διαχειριστείτε ένα  προφίλ ατόμου:
+
+- Προσθήκη: Συμπληρώστε όνομα, επώνυμο, ημερομηνία γέννησης.
+
+- Επεξεργασία: Κάντε αναζήτηση μέσω του ID. Πατήστε "Φόρτωση Στοιχείων". Έπειτα μπορείτε να τροποποιήσετε τα στοιχεία ενός ατόμου, όπως όνομα, επώνυμο και ημερομηνία γέννησης. Τέλος, πατήστε "Αποθήκευση Αλλαγών".
+
+- Διαγραφή: Κάντε αναζήτηση μέσω του ID. Πατήστε "Φόρτωση Στοιχείων" για επιβεβαίωση ότι είναι το σωστό προφίλ. Έπειτα μπορείτε να διαγράψετε το άτομο πατώντας διαγραφή."""
+
+    Label(help_window, text=instructions, justify="left", wraplength=380).pack(pady=10)
+    Button(help_window, text="Κλείσιμο", command=help_window.destroy).pack()
+def show_relationship_help():
+    """Εμφανίζει pop-up με οδηγίες για τις σχέσεις."""
+    help_window = Toplevel(root)
+    help_window.title("Βοήθεια - Σχέσεις")
+    help_window.geometry("400x200")
+
+    instructions = """Πώς να διαχειριστείτε τις σχέσεις:
+    
+- Προσθήκη: Επιλέξτε δύο άτομα μέσω του ID τους και καθορίστε τον τύπο σχέσης (γονιός (άτομο 1)-παιδί (άτομο 2), σύζυγοι, αδέλφια).
+
+- Επεξεργασία: Αναζητήστε τη σχέση με το ID και τροποποιήστε τον τύπο της μέσω του drop down menu.
+
+- Διαγραφή: Επιλέξτε τη σχέση με το ID. Πατήστε "Φόρτωση Στοιχείων" για επιβεβαίωση ότι είναι η σχέση που θέλετε να διαγράψετε. Έπειτα μπορείτε να διαγράψετε την σχέση πατώντας διαγραφή."""
+
+    Label(help_window, text=instructions, justify="left", wraplength=380).pack(pady=10)
+    Button(help_window, text="Κλείσιμο", command=help_window.destroy).pack()
+
+def show_graph_help():
+    """Pop-up με οδηγίες για τον γράφο."""
+    help_window = Toplevel(root)
+    help_window.title("Βοήθεια - Γράφος")
+    help_window.geometry("400x200")
+
+    instructions = """Πώς να χρησιμοποιήσετε τον γράφο:
+
+Ο γράφος εμφανίζει τις σχέσεις μεταξύ ατόμων με συνδετικές γραμμές.
+
+Κωδικοποίηση γραμμών:
+  Κόκκινο: Σύζυγοι
+  Μωβ: Γονιός-Παιδί
+  Μπλε: Αδέρφια
+
+Δοκιμάστε να κάνετε κλικ σε έναν κόμβο (άτομο) για περισσότερες πληροφορίες."""
+
+    Label(help_window, text=instructions, justify="left", wraplength=380).pack(pady=10)
+  
+def show_search_help():
+    """Pop-up με οδηγίες για την αναζήτηση απογόνων."""
+    help_window = Toplevel(root)
+    help_window.title("Βοήθεια - Αναζήτηση Απογόνων")
+    help_window.geometry("400x250")
+
+    instructions = """Πώς να αναζητήσετε απογόνους:
+
+Επιλέξτε ένα άτομο με την εισαγωγή του ID του. Το πρόγραμμα επιστρέφει.
+
+Η εφαρμογή θα διασχίσει τις σχέσεις αυτού του ατόμου για να βρει όλους τους απογόνους και θα εμφανιστεί λίστα με τους απογόνους κάθε επιπέδου.
+
+Σημείωση: Η αναζήτηση συνεχίζεται μέχρι το τελευταίο άτομο στο μονοπάτι."""
+
+    Label(help_window, text=instructions, justify="left", wraplength=380).pack(pady=10)
+    Button(help_window, text="Κλείσιμο", command=help_window.destroy).pack()
 
 
 
@@ -455,9 +530,9 @@ anazitisi.add_command(label='Αναζήτηση Απογόνων', command=open_
 
 voitheia= Menu(menu, tearoff=0)
 menu.add_cascade(label='Βοήθεια', menu=voitheia)
-voitheia.add_command(label='Σχέσεις', command=test) 
-voitheia.add_command(label='Γράφος', command=test)
-voitheia.add_command(label='Αναζήτηση', command=test)
+voitheia.add_command(label='Σχέσεις', command=show_relationship_help) 
+voitheia.add_command(label='Γράφος', command=show_graph_help)
+voitheia.add_command(label='Αναζήτηση', command=show_search_help)
 
 
 
