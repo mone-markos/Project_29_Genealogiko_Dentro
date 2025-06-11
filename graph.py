@@ -1,5 +1,3 @@
-from tkinter import *
-from tkinter.font import Font
 from Database import *
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -23,7 +21,11 @@ def load_persons_and_relationships():
 
     # Προσθήκη των ατόμων ως κόμβοι στον γράφο
     for person in people:
-        person_id, first_name, last_name, birth_date
+        person_id = person[0]
+        first_name = person[1]
+        last_name = person[2]
+        birth_date = person[3]
+
         # Δημιουργία label για τον κόμβο με το όνομα και το ID μόνο (χωρίς επιπλέον αριθμούς)
         G.add_node(person_id, label=f'(ID:{person_id})\n{first_name}\n{last_name}')
 
@@ -49,9 +51,9 @@ def load_persons_and_relationships():
 def show_popup(node_id):
     """Αναπαράγει το pop-up για το άτομο που επιλέγεται από το γράφημα."""
     person = get_person(node_id)  # Ανάκτηση των πληροφοριών από τη βάση δεδομένων
-    if person:
-        first_name, last_name, birth_date
-        message = f"Όνομα: {first_name} {last_name}\nΗμερομηνία Γέννησης: {birth_date}"
+    if person: 
+        person[0], person[1], person[2], person[3]
+        message = f"Όνομα: {person[1]} {person[2]}\nΗμερομηνία Γέννησης: {person[3]}"
         tkinter.messagebox.showinfo("Πληροφορίες Ατόμου", message)
 
 def display_family_tree():
@@ -67,7 +69,7 @@ def display_family_tree():
 
     # Σχεδιάζουμε το γράφημα
     nx.draw(G, pos, with_labels=True, labels=node_labels, node_color='lightgrey', edge_color=edge_colors,
-            node_size=3000, font_size=10, font_weight='bold', width=2, ax=ax)
+            node_size=6000, font_size=10, font_weight='bold', width=2, ax=ax)
 
 
     # Συνάρτηση για να ανιχνεύουμε το κλικ στον κόμβο
@@ -84,4 +86,5 @@ def display_family_tree():
 
     # Τίτλος και εμφάνιση του γραφήματος
     plt.title("Γενεαλογικό Δέντρο", fontsize=15)
+    plt.text(-1.161, -0.828,'Χρωματική κωδικοποίηση:\n Μοβ = Γονείς-Παιδί,\n Κόκκινο = Ζευγάρι,\n Μπλε = Αδέρφια', ha='center', va='center', fontsize=12, color)
     plt.show()
