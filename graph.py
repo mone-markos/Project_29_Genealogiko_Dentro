@@ -86,5 +86,5 @@ def display_family_tree():
 
     # Τίτλος και εμφάνιση του γραφήματος
     plt.title("Γενεαλογικό Δέντρο", fontsize=15)
-    plt.text(-1.161, -0.828,'Χρωματική κωδικοποίηση:\n Μοβ = Γονείς-Παιδί,\n Κόκκινο = Ζευγάρι,\n Μπλε = Αδέρφια', ha='center', va='center', fontsize=12, color)
+    plt.text(-1.161, -0.828,'Χρωματική κωδικοποίηση:\n Μοβ = Γονείς-Παιδί,\n Κόκκινο = Ζευγάρι,\n Μπλε = Αδέρφια', ha='center', va='center', fontsize=12, color='black')
     plt.show()

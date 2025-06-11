@@ -2,8 +2,8 @@ import Database as db
 from person import Person
 
 # Επιστρέφει None αν δεν βρεί κάτι
-def find_person(id=None, first_name=None, last_name=None):
-    people = find_people(id, first_name, last_name)
+def find_person(id=None, first_name=None, last_name=None, date_of_birth = None):
+    people = find_people(id, first_name, last_name, date_of_birth)
 
     if people:
         return people[0]
@@ -11,13 +11,13 @@ def find_person(id=None, first_name=None, last_name=None):
     return None
 
 # Επιστρέφει: [{'id':1, 'first_name':..., ...}, ..]
-def find_people(id=None, first_name=None, last_name=None):
+def find_people(id=None, first_name=None, last_name=None, date_of_birth = None):
     people = []
     for person in _get_all_people():
         if        (person.first_name == first_name or first_name is None) \
                 and (person.last_name == last_name or last_name is None) \
-                and (person.id == id or id is None):
-
+                and (person.id == id or id is None) \
+                and (person.date_of_birth == date_of_birth or date_of_birth is None):
             people.append(person)
     
     people_dicts = [person.as_dictionary() for person in people]
@@ -58,11 +58,9 @@ def _get_all_people():
     for person_sql in people_sql:
         people.append(Person(id=person_sql[0], first_name=person_sql[1], last_name=person_sql[2], date_of_birth=person_sql[3]))
     
-    print(people_sql)
     sql = "SELECT * FROM relationships;"
     cursor.execute(sql)
     relationships_sql = cursor.fetchall()
-    print('relationships:', relationships_sql)
 
     # Φτιάχνω πρώτα συζήγους
     for relationship in relationships_sql:
